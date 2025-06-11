@@ -1,10 +1,19 @@
 
+import { Quote } from "../components/Quote"
+
 export const Signup = () => {
   return (
     <div>
-      Signup
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+
+            <div>
+              hello hello hello
+            </div>
+            <div className="hidden lg:block">
+              <Quote/>
+            </div>
+            
+        </div>
     </div>
   )
 }
-
-export default Signup
