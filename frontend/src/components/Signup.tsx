@@ -23,7 +23,7 @@ export function SignupComponent() {
   const onSubmit = async (values: SignupInput) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`${BACKEND_URL}/api/signup`, {
+      const response = await fetch(`${BACKEND_URL}/api/v1/user/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

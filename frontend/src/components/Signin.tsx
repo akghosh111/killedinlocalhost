@@ -22,7 +22,7 @@ export function SigninComponent() {
   const onSubmit = async (values: SigninInput) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`${BACKEND_URL}/api/signin`, {
+      const response = await fetch(`${BACKEND_URL}/api/v1/user/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
