@@ -34,8 +34,9 @@ export function SigninComponent() {
 
       if (response.ok) {
         const data = await response.json()
-        // Handle successful signin (store token, redirect, etc.)
+        // Store both token and user ID
         localStorage.setItem("token", data.token)
+        localStorage.setItem("userId", data.user.id)
         console.log("Signin successful:", data)
         navigate("/projects");
       } else {

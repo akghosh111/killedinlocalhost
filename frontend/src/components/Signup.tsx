@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "@/config"
 
 export function SignupComponent() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate();
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupInput),
@@ -22,28 +25,57 @@ export function SignupComponent() {
 
   const onSubmit = async (values: SignupInput) => {
     setIsLoading(true)
+    setError(null)
+    
+    const requestBody = {
+      email: values.email,
+      password: values.password,
+      name: values.name || undefined
+    };
+    
+    console.log('Attempting signup with:', { ...requestBody, password: '[REDACTED]' });
+    
     try {
+      console.log('Sending request to:', `${BACKEND_URL}/api/v1/user/signup`);
+      
       const response = await fetch(`${BACKEND_URL}/api/v1/user/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
-        body: JSON.stringify(values),
-      })
+        body: JSON.stringify(requestBody),
+        credentials: 'include',
+      });
+
+      console.log('Response status:', response.status);
+      
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+        console.log('Response data:', data);
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned non-JSON response');
+      }
 
       if (response.ok) {
-        const data = await response.json()
-        // Handle successful signup (store token, redirect, etc.)
-        localStorage.setItem("token", data.token)
-        console.log("Signup successful:", data)
+        console.log('Signup successful, storing token and user data');
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.user.id);
+        navigate("/projects");
       } else {
-        const error = await response.json()
-        console.error("Signup failed:", error)
+        const errorMessage = data.message || "Signup failed";
+        console.error('Signup failed:', errorMessage);
+        setError(errorMessage);
       }
     } catch (error) {
-      console.error("Signup error:", error)
+      console.error('Signup error:', error);
+      setError(error instanceof Error ? error.message : "An error occurred during signup");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -112,12 +144,24 @@ export function SignupComponent() {
                   </FormItem>
                 )}
               />
+
+              {error && (
+                <div className="text-sm text-red-600">
+                  {error}
+                </div>
+              )}
             </CardContent>
 
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Sign Up"}
               </Button>
+              <div className="text-sm text-center text-gray-600">
+                Already have an account?{" "}
+                <Link to="/signin" className="text-blue-600 hover:underline">
+                  Sign in
+                </Link>
+              </div>
             </CardFooter>
           </form>
         </Form>
