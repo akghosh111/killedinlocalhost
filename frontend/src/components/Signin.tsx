@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Link, useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "@/config"
 
 export function SigninComponent() {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
 
   const form = useForm<SigninInput>({
     resolver: zodResolver(signinInput),
@@ -35,6 +37,7 @@ export function SigninComponent() {
         // Handle successful signin (store token, redirect, etc.)
         localStorage.setItem("token", data.token)
         console.log("Signin successful:", data)
+        navigate("/projects");
       } else {
         const error = await response.json()
         console.error("Signin failed:", error)
