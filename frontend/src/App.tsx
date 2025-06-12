@@ -5,6 +5,7 @@ import { Projects } from './pages/Projects'
 import { ProjectView } from './pages/ProjectView'
 import { NewProject } from './pages/NewProject'
 import { EditProject } from './pages/EditProject'
+import HomePage from './pages/HomePage'
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
           <Route path="/project/new" element={<NewProject />} />
           <Route path="/project/:id" element={<ProjectView />} />
           <Route path="/project/edit/:id" element={<EditProject />} />
-          <Route path="/" element={<Projects />} />
+          <Route path="/" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </>
